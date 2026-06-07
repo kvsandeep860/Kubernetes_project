@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-test-app          # ✅ no colon
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: k8s-test-app        # ✅ label value, no colon
+  template:
+    metadata:
+      labels:
+        app: k8s-test-app      # ✅ must match selector above
+    spec:
+      containers:
+      - name: k8s-test-app     # ✅ container name, no colon
+        image: k8s-test-app:latest   # ✅ image tag is fine here — this is Docker, not K8s naming
+        imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "64Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-test-app           # ✅ no colon
+spec:
+  selector:
+    app: k8s-test-app          # ✅ must match Deployment's pod label
+  ports:
+  - port: 8080
+    targetPort: 5000
